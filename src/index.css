@@ -63,3 +63,9 @@
 @theme {
   --font-display: "Be Vietnam Pro", sans-serif;
 }
+
+.hero-bg {
+  background-image: url("/src/assets/images/hero-image.png");
+  background-size: cover;
+  background-position: center;
+}

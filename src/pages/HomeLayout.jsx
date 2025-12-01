@@ -5,7 +5,7 @@ const HomeLayout = () => {
   return (
     <div>
       <Navbar />
-      <main className="bg-[#FFFFFF] font-display">
+      <main className="bg-[#FFFFFF] font-display hero-bg ">
         <Outlet />
       </main>
     </div>
