@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Loading from "./Loading";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Link } from "react-router-dom";
 
 const url = `https://api.unsplash.com/search/photos?client_id=${
   import.meta.env.VITE_API_KEY
@@ -23,7 +24,7 @@ const Gallery = () => {
     enabled: !!debouncedValue, // 🔥 only fetch after debounce
   });
 
-  console.log(response.data);
+  // console.log(response.data);
 
   if (response.isPending) {
     return <Loading />;
@@ -53,11 +54,13 @@ const Gallery = () => {
           key={item.id}
           className="mb-6 break-inside-avoid rounded overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 relative cursor-pointer group"
         >
-          <img
-            src={item.urls.regular}
-            alt={item.alt_description}
-            className="w-full rounded object-cover transform group-hover:scale-105 transition-transform duration-300"
-          />
+          <Link to={`/landing/${item.id}`}>
+            <img
+              src={item.urls.regular}
+              alt={item.alt_description}
+              className="w-full rounded object-cover transform group-hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
         </div>
       ))}
     </main>

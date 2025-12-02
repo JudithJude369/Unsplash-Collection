@@ -1,31 +1,105 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
+const UNSPLASH_BASE = "https://api.unsplash.com";
+
 const Collections = () => {
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+
+  // Fetch all collections
+  const {
+    data: collections = [],
+    isLoading: loadingCollections,
+    isError,
+  } = useQuery({
+    queryKey: ["collections"],
+    queryFn: async () => {
+      const res = await axios.get(`${UNSPLASH_BASE}/collections`, {
+        params: { client_id: import.meta.env.VITE_API_KEY, per_page: 30 },
+      });
+      return res.data;
+    },
+  });
+
+  // Fetch images inside selected collection
+  const { data: images = [], isLoading: loadingImages } = useQuery({
+    queryKey: ["collectionImages", selectedCollectionId],
+    queryFn: async () => {
+      const res = await axios.get(
+        `${UNSPLASH_BASE}/collections/${selectedCollectionId}/photos`,
+        {
+          params: { client_id: import.meta.env.VITE_API_KEY, per_page: 30 },
+        }
+      );
+      return res.data;
+    },
+    enabled: !!selectedCollectionId,
+  });
+
+  if (loadingCollections) return <p className="p-8">Loading collections...</p>;
+  if (isError)
+    return <p className="p-8 text-red-500">Error loading collections.</p>;
+
   return (
-    <div className="text-6xl text-amber-300 pt-50">
-      <h1>
-        {" "}
-        ⭐ 1. TypeScript is NOT required for your first job TypeScript is nice
-        to have, but it is not required for junior roles. Most companies hiring
-        juniors expect: Strong JavaScript fundamentals Basic to intermediate
-        React Ability to fetch APIs Ability to build UI components Ability to
-        style pages Ability to manage state (Zustand/context) And that’s it.
-        Many junior developers get hired first, then learn TypeScript on the
-        job. ⭐ 2. Next.js is also NOT required for your first job Here’s the
-        truth: Some companies use Next.js Some use plain React Some use Vue Some
-        use Angular Some use Astro, Remix, Svelte, etc. React alone already gets
-        you into many jobs. Learning Next.js later will make you even more
-        employable, but it is NOT mandatory for your first job. ⭐ 3. What
-        matters MOST for hiring juniors These 5 things matter more than
-        TypeScript or Next.js: ✔ A solid portfolio ✔ Clean, readable code ✔
-        Ability to build real projects ✔ Understanding of APIs ✔ A good
-        fullstack project (like the one you plan to build) If you build: A
-        strong frontend project A fullstack capstone project A portfolio site
-        You will look ready for junior roles. ⭐ 4. Companies don’t expect
-        juniors to know everything Juniors are hired for potential, not
-        perfection. Companies expect to teach you: TypeScript Next.js Testing
-        Backend basics CI/CD Advanced tools No junior knows all that. You
-        already have the core skills.
-      </h1>
-    </div>
+    <main className="p-8 pt-50">
+      <h1 className="text-3xl font-bold mb-6">Collections</h1>
+
+      {/* Collections list */}
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+        {collections.map((col) => (
+          <li
+            key={col.id}
+            className={`border rounded-lg shadow p-4 cursor-pointer hover:shadow-lg transition ${
+              selectedCollectionId === col.id ? "bg-gray-100" : ""
+            }`}
+            onClick={() =>
+              setSelectedCollectionId(
+                selectedCollectionId === col.id ? null : col.id
+              )
+            }
+          >
+            <h2 className="text-xl font-bold">{col.title}</h2>
+            {col.total_photos !== undefined && (
+              <p className="text-gray-600">{col.total_photos} photos</p>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      {/* Images inside selected collection */}
+      {selectedCollectionId && (
+        <>
+          <h2 className="text-2xl font-bold mb-4">Images in this collection</h2>
+
+          {loadingImages ? (
+            <p>Loading images...</p>
+          ) : images.length === 0 ? (
+            <p>No images found in this collection.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {images.map((img) => (
+                <Link
+                  to={`/landing/${img.id}`}
+                  key={img.id}
+                  className="border rounded shadow overflow-hidden block"
+                >
+                  <img
+                    src={img.urls.small}
+                    alt={img.alt_description || "Unsplash image"}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-2">
+                    <p className="text-sm font-semibold">{img.user.name}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </main>
   );
 };
 
