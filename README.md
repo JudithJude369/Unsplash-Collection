@@ -1,16 +1,120 @@
-# React + Vite
+UnsplashBox— Unsplash Image Collections App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+UnsplashBox is a modern React application that allows users to search high-quality images from Unsplash, view full image details, and organize images into custom collections. It integrates with the [Unsplash API](https://unsplash.com/developers) to deliver smooth, responsive, and intuitive experience for managing inspiration, assets, and visual ideas.
 
-Currently, two official plugins are available:
+---
+🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔍 Search Images — Find stunning photos by keyword using the Unsplash API.
 
-## React Compiler
+🖼️ Image Details Page — View photographer info, publish date, and download images.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+➕ Add to Collections — Save images into custom user-created collections.
 
-## Expanding the ESLint configuration
+📁 Collections Management — Create, view, and delete collections.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🖼️ Collection Preview — View all images saved inside each collection.
+
+🔎 Search Collections — Quickly filter collections while adding images.
+
+📌 Duplicate Prevention — Same image cannot be added twice to one collection.
+
+⚙️ Dynamic Routing — Smooth navigation with React Router.
+
+💾 Global State Management — Managed with Zustand.
+
+⚡ Data Fetching & Caching — Powered by TanStack Query (React Query).
+
+🎨 Modern UI/UX — Fully responsive design with Tailwind CSS.
+---
+
+🧰 Tech Stack
+
+## 🧰 Tech Stack
+
+| Category               | Tools Used                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| **Frontend Framework** | [React](https://react.dev/)                                                            |
+| **Routing**            | [React Router DOM](https://reactrouter.com/)                                           |
+| **Styling**            | [Tailwind CSS](https://tailwindcss.com/)                                               |
+| **State Management**   | [Zustand](https://zustand-demo.pmnd.rs/)                                               |
+| **Data Fetching**      | [Axios](https://axios-http.com/), [TanStack Query](https://tanstack.com/query/latest)  |           |
+| **Icons**              | [React Icons](https://react-icons.github.io/react-icons/)                              |
+
+---
+
+📸 Screenshots
+![unsplash](https://github.com/user-attachments/assets/235d0a73-9f90-437b-841f-0e2888e2e686)
+
+---
+🌐 [Live Site URL](https://unsplash-collection-two.vercel.app/)
+
+⚙️ Installation & Setup
+
+Follow these steps to run the project locally:
+
+# 1️⃣ Clone the repository
+git clone https://github.com/your-username/snap-shelf.git
+
+# 2️⃣ Navigate into the project directory
+cd snap-shelf
+
+# 3️⃣ Install dependencies
+npm install
+
+# 4️⃣ Create a .env file and add your Unsplash API key
+VITE_API_KEY=your_unsplash_access_key
+
+# 5️⃣ Start the development server
+npm run dev
+
+
+Then open http://localhost:5173/
+ in your browser 🚀
+
+🌍 API Source
+
+This project uses the Unsplash API
+—a powerful API that provides access to millions of high-quality free images.
+
+🧩 Project Structure
+SnapShelf/
+├── src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Home, Image Details, Collections pages
+│   ├── store/          # Zustand global stores
+│   ├── hooks/          # Custom hooks (e.g. debounce)
+│   ├── App.jsx         # App routing
+│   └── main.jsx        # Entry point
+└── package.json
+
+💡 Future Improvements
+
+🔐 User authentication (login & signup)
+
+💾 Cloud-based collections (Firebase / Supabase)
+
+🌙 Dark mode toggle
+
+🧭 Infinite scrolling
+
+🏷️ Image tagging system
+
+📤 Shareable collection links
+
+🧑‍💻 Author
+
+👩‍💻 Ifunanya Mmeremikwu
+📧 Email: ifunanyajudith09@gmail.com
+
+💼 LinkedIn: [ifunanya Mmeremikwu](https://www.linkedin.com/in/ifunanya-mmeremikwu/)
+
+🌟 GitHub: JudithJude369
+
+🪪 License
+
+This project is open source and available under the MIT License.
+
+⭐ Support
+
+If you find this project helpful, please consider ⭐ starring the repository — it helps others discover it and motivates me to keep building awesome projects!
