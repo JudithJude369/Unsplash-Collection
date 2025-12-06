@@ -5,11 +5,11 @@ const Navbar = () => {
   return (
     <nav
       aria-label="Main Navigation"
-      className="bg-white/80 backdrop-blur-md font-display flex justify-between items-center px-8 py-4 shadow fixed top-0 left-0 w-full z-50"
+      className="bg-white/80 backdrop-blur-md font-display flex justify-between items-center p-4 shadow fixed top-0 left-0 w-full z-50"
     >
       <img src={logo} alt="company-logo" className="h-8" />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <NavLink
           to="/"
           className={({ isActive }) =>
