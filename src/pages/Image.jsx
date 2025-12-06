@@ -100,7 +100,7 @@ const Image = () => {
         {/* ✅ BUTTON ROW */}
         <div className="flex gap-4 mb-4 relative" ref={dropdownRef}>
           <button
-            className="bg-gray-200 rounded-sm shadow p-2 flex gap-2 items-center justify-center"
+            className="bg-gray-200 rounded-sm shadow p-2 flex gap-2 items-center justify-center text-[0.875rem]"
             onClick={() => setShowDropdown((prev) => !prev)}
           >
             <img src={plusImg} alt="Add" /> Add to Collection
@@ -111,7 +111,7 @@ const Image = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="bg-gray-200 rounded-sm shadow p-4 flex gap-2 items-center justify-center">
+            <button className="bg-gray-200 rounded-sm shadow p-4 flex gap-2 items-center justify-center text-[0.875rem]">
               <img src={downloadImg} alt="Download" /> Download
             </button>
           </a>
