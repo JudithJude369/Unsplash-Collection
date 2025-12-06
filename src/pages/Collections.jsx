@@ -1,103 +1,124 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { Link } from "react-router-dom";
-
-const UNSPLASH_BASE = "https://api.unsplash.com";
+import { useCollectionStore } from "@/store/collectionStore";
+import { Link, useNavigate } from "react-router-dom";
+import { HiArrowLeft } from "react-icons/hi";
 
 const Collections = () => {
-  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+  const navigate = useNavigate();
 
-  // Fetch all collections
   const {
-    data: collections = [],
-    isLoading: loadingCollections,
-    isError,
-  } = useQuery({
-    queryKey: ["collections"],
-    queryFn: async () => {
-      const res = await axios.get(`${UNSPLASH_BASE}/collections`, {
-        params: { client_id: import.meta.env.VITE_API_KEY, per_page: 30 },
-      });
-      return res.data;
-    },
-  });
+    collections,
+    addCollection,
+    removeCollection,
+    removeImageFromCollection,
+  } = useCollectionStore();
 
-  // Fetch images inside selected collection
-  const { data: images = [], isLoading: loadingImages } = useQuery({
-    queryKey: ["collectionImages", selectedCollectionId],
-    queryFn: async () => {
-      const res = await axios.get(
-        `${UNSPLASH_BASE}/collections/${selectedCollectionId}/photos`,
-        {
-          params: { client_id: import.meta.env.VITE_API_KEY, per_page: 30 },
-        }
-      );
-      return res.data;
-    },
-    enabled: !!selectedCollectionId,
-  });
+  const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+  const [newCollectionName, setNewCollectionName] = useState("");
 
-  if (loadingCollections) return <p className="p-8">Loading collections...</p>;
-  if (isError)
-    return <p className="p-8 text-red-500">Error loading collections.</p>;
+  const selectedCollection = collections.find(
+    (col) => col.id === selectedCollectionId
+  );
+
+  const handleAddCollection = () => {
+    const name = newCollectionName.trim();
+    if (!name) return;
+    addCollection(name);
+    setNewCollectionName("");
+  };
 
   return (
-    <main className="p-8 pt-50">
-      <h1 className="text-3xl font-bold mb-6">Collections</h1>
+    <main className="px-8 pt-30">
+      {/* Back to Image page */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-blue-500 mb-4 hover:text-blue-700"
+      >
+        <HiArrowLeft /> Back
+      </button>
 
-      {/* Collections list */}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+      <h1 className="text-2xl font-bold mb-2">Collections</h1>
+
+      {/* UX Note */}
+      <p className="text-gray-500 text-sm mb-6">Create new collections here.</p>
+
+      {/* Create new collection */}
+      <div className="flex gap-2 mb-6">
+        <input
+          type="text"
+          placeholder="New collection name"
+          value={newCollectionName}
+          onChange={(e) => setNewCollectionName(e.target.value)}
+          className="border p-2 rounded flex-1"
+        />
+        <button
+          onClick={handleAddCollection}
+          className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
+        >
+          Create
+        </button>
+      </div>
+
+      {/* List of collections */}
+      <div className="flex flex-wrap gap-4 mb-8">
+        {collections.length === 0 && (
+          <p className="text-gray-500">No collections yet.</p>
+        )}
         {collections.map((col) => (
-          <li
+          <button
             key={col.id}
-            className={`border rounded-lg shadow p-4 cursor-pointer hover:shadow-lg transition ${
-              selectedCollectionId === col.id ? "bg-gray-100" : ""
-            }`}
             onClick={() =>
               setSelectedCollectionId(
                 selectedCollectionId === col.id ? null : col.id
               )
             }
+            className={`px-4 py-2 rounded shadow text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              selectedCollectionId === col.id
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            }`}
           >
-            <h2 className="text-xl font-bold">{col.title}</h2>
-            {col.total_photos !== undefined && (
-              <p className="text-gray-600">{col.total_photos} photos</p>
-            )}
-          </li>
+            {col.name} ({col.images.length})
+          </button>
         ))}
-      </ul>
+      </div>
 
-      {/* Images inside selected collection */}
-      {selectedCollectionId && (
-        <>
-          <h2 className="text-2xl font-bold mb-4">Images in this collection</h2>
+      {/* Show selected collection images */}
+      {selectedCollection && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">
+            Images in "{selectedCollection.name}"
+          </h2>
 
-          {loadingImages ? (
-            <p>Loading images...</p>
-          ) : images.length === 0 ? (
-            <p>No images found in this collection.</p>
+          {selectedCollection.images.length === 0 ? (
+            <p className="text-gray-500">No images in this collection yet.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {images.map((img) => (
-                <Link
-                  to={`/landing/${img.id}`}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {selectedCollection.images.map((img) => (
+                <div
                   key={img.id}
-                  className="border rounded shadow overflow-hidden block"
+                  className="relative group rounded shadow overflow-hidden"
                 >
-                  <img
-                    src={img.urls.small}
-                    alt={img.alt_description || "Unsplash image"}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-2">
-                    <p className="text-sm font-semibold">{img.user.name}</p>
-                  </div>
-                </Link>
+                  <Link to={`/landing/${img.id}`}>
+                    <img
+                      src={img.urls.regular}
+                      alt={img.alt_description || "Image"}
+                      className="w-full h-48 object-cover group-hover:scale-105 transform transition-transform duration-300"
+                    />
+                  </Link>
+                  <button
+                    onClick={() =>
+                      removeImageFromCollection(selectedCollection.id, img.id)
+                    }
+                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded opacity-90 hover:opacity-100"
+                  >
+                    &times;
+                  </button>
+                </div>
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
     </main>
   );

@@ -2,8 +2,8 @@ import { Gallery, SearchInput } from "@/components";
 
 const Landing = () => {
   return (
-    <main className="pt-50">
-      <div className="text-center">
+    <main className=" hero-bg">
+      <div className="text-center pt-30">
         <h1 className="text-[2.25rem] capitalize text-[#121826] font-bold">
           search
         </h1>

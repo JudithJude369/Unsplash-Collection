@@ -1,120 +1,28 @@
-// import { Loading } from "@/components";
-// import { useQuery } from "@tanstack/react-query";
-// import axios from "axios";
-// import { useParams } from "react-router-dom";
-// import plusImg from "@/assets/images/Plus.svg";
-// import downloadImg from "@/assets/images/down arrow.svg";
-
-// const url = "https://api.unsplash.com";
-
-// const Image = () => {
-//   const { id } = useParams();
-//   const response = useQuery({
-//     queryKey: ["photoDetails", id],
-//     queryFn: async () => {
-//       const result = await axios.get(`${url}/photos/${id}`, {
-//         params: {
-//           client_id: import.meta.env.VITE_API_KEY,
-//         },
-//       });
-//       return result.data;
-//     },
-//   });
-//   console.log(response.data);
-
-//   if (response.isPending) {
-//     return <Loading />;
-//   }
-
-//   if (response.isError) {
-//     return (
-//       <h4 style={{ textAlign: "center", marginTop: "3rem" }}>
-//         There was error...
-//       </h4>
-//     );
-//   }
-
-//   const res = response.data;
-//   const createdDate = new Date(res.created_at);
-//   const formattedDate = createdDate.toLocaleDateString("en-US", {
-//     year: "numeric",
-//     month: "long",
-//     day: "numeric",
-//   });
-
-//   return (
-//     <main
-//       className="pt-50 px-8  grid grid-cols-1 justify-center lg:grid-cols-2
-//    gap-8   text-[#121826] "
-//     >
-//       <img
-//         src={res.urls.regular}
-//         alt={res.alt_description}
-//         className="rounded object-cover max-w-[900px] w-full shadow-xl"
-//       />
-//       <section>
-//         {/* author details */}
-//         <article className="flex items-center gap-4">
-//           <img
-//             src={res.user.profile_image.large}
-//             alt={res.user.name}
-//             className="rounded-full object-cover shadow-xl max-w-[60px]"
-//           />
-//           <h1 className="font-bold">{res.user.name}</h1>
-//         </article>
-
-//         <p className="my-4">published on {formattedDate}</p>
-//         {/* add to collections */}
-//         <div className="flex gap-4 mb-4">
-//           <button
-//             className="bg-[#E5E7EB] rounded-sm shadow text-[0.875rem] font-bold cursor-pointer p-4 flex gap-2 justify-center"
-//             type="button"
-//           >
-//             <img src={plusImg} alt="" />
-//             <p>Add to Collection</p>
-//           </button>
-//           <button
-//             className="bg-[#E5E7EB] rounded-sm shadow text-[0.875rem] font-bold cursor-pointer p-4 flex gap-2 justify-center items-center"
-//             type="button"
-//           >
-//             <img src={downloadImg} alt="" />
-//             <p>Download</p>
-//           </button>
-//         </div>
-
-//         {/* collections */}
-//       </section>
-//     </main>
-//   );
-// };
-
-// export default Image;
-
-import { useEffect, useState } from "react";
 import { Loading } from "@/components";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import plusImg from "@/assets/images/Plus.svg";
 import downloadImg from "@/assets/images/down arrow.svg";
-import AddToCollectionModal from "@/components/AddToCollectionModal";
-import {
-  addImageToCollection,
-  removeImageFromCollection,
-  getCollectionsForImage,
-  getCollectionsImageNotIn,
-} from "@/helpers/collectionHelpers";
+import { useCollectionStore } from "@/store/collectionStore";
+import { useState, useRef, useEffect } from "react";
 
 const url = "https://api.unsplash.com";
 
 const Image = () => {
   const { id } = useParams();
-  const [collections, setCollections] = useState([]);
-  const [availableCollections, setAvailableCollections] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [search, setSearch] = useState("");
+  const dropdownRef = useRef(null);
 
-  // Fetch photo from Unsplash
-  const response = useQuery({
+  const { collections, addImageToCollection, removeCollection } =
+    useCollectionStore();
+
+  const {
+    data: res,
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ["photoDetails", id],
     queryFn: async () => {
       const result = await axios.get(`${url}/photos/${id}`, {
@@ -124,146 +32,177 @@ const Image = () => {
     },
   });
 
-  // Fetch collections image belongs to
+  // Close dropdown when clicking outside
   useEffect(() => {
-    if (!response.data) return;
-
-    const fetchCollections = async () => {
-      const cols = await getCollectionsForImage(id);
-      setCollections(cols);
-      const avail = await getCollectionsImageNotIn(id);
-      setAvailableCollections(avail);
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+        setSearch("");
+      }
     };
-    fetchCollections();
-  }, [response.data]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  if (response.isLoading) return <Loading />;
-  if (response.isError)
+  if (isPending) return <Loading />;
+  if (isError)
     return (
-      <h4 style={{ textAlign: "center", marginTop: "3rem" }}>
-        Error loading image
-      </h4>
+      <h4 className="text-center mt-12 text-gray-500">Error loading image</h4>
     );
 
-  const res = response.data;
-  const createdDate = new Date(res.created_at);
-  const formattedDate = createdDate.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const imageCollections = collections.filter((col) =>
+    col.images.some((img) => img.id === res.id)
+  );
 
-  const handleAddToCollection = async (collectionId) => {
-    const imageData = {
-      id: res.id,
-      url: res.urls.regular,
-      author: res.user.name,
-      profile_image: res.user.profile_image.medium,
-      publishedAt: res.created_at,
-    };
-    await addImageToCollection(collectionId, imageData);
-    setModalOpen(false);
+  const availableCollections = collections.filter(
+    (col) => !col.images.some((img) => img.id === res.id)
+  );
 
-    // Refresh collections
-    const cols = await getCollectionsForImage(res.id);
-    setCollections(cols);
-    const avail = await getCollectionsImageNotIn(res.id);
-    setAvailableCollections(avail);
-  };
-
-  const handleRemoveFromCollection = async (collectionId) => {
-    const imageData = {
-      id: res.id,
-      url: res.urls.regular,
-      author: res.user.name,
-      profile_image: res.user.profile_image.medium,
-      publishedAt: res.created_at,
-    };
-    await removeImageFromCollection(collectionId, imageData);
-
-    // Refresh collections
-    const cols = await getCollectionsForImage(res.id);
-    setCollections(cols);
-    const avail = await getCollectionsImageNotIn(res.id);
-    setAvailableCollections(avail);
-  };
-
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = res.links.download + "?force=true"; // Unsplash download link
-    link.download = `${res.id}.jpg`;
-    link.click();
-  };
+  const filteredCollections = availableCollections.filter((col) =>
+    col.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <main className="pt-50 px-8 grid grid-cols-1 justify-center lg:grid-cols-2 gap-8 text-[#121826]">
+    <main className="pt-30 px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
       <img
         src={res.urls.regular}
-        alt={res.alt_description}
-        className="rounded object-cover max-w-[900px] w-full shadow-xl"
+        alt={res.alt_description || "Image"}
+        className="rounded shadow-xl object-cover max-w-[900px] w-full mx-auto"
       />
+
       <section>
-        {/* Author info */}
+        {/* Author */}
         <article className="flex items-center gap-4 mb-4">
           <img
             src={res.user.profile_image.large}
             alt={res.user.name}
-            className="rounded-full object-cover shadow-xl max-w-[60px]"
+            className="rounded-full w-14 h-14"
           />
           <h1 className="font-bold">{res.user.name}</h1>
         </article>
 
-        <p className="my-4">Published on {formattedDate}</p>
+        <p className="my-4">
+          Published on {new Date(res.created_at).toLocaleDateString()}
+        </p>
 
-        {/* Add / Download */}
-        <div className="flex gap-4 mb-4">
-          <button
-            onClick={() => setModalOpen(true)}
-            className="bg-[#E5E7EB] rounded-sm shadow text-[0.875rem] font-bold cursor-pointer p-4 flex gap-2 justify-center"
+        {/* UX Note with link to Collections */}
+        <p className="text-gray-500 text-sm mb-2">
+          Add this image to your collections. To create new collections, go to{" "}
+          <Link
+            to="/collections"
+            className="text-blue-500 underline hover:text-blue-700"
           >
-            <img src={plusImg} alt="" />
-            <p>Add to Collection</p>
+            Collections page
+          </Link>
+          .
+        </p>
+
+        {/* ✅ BUTTON ROW */}
+        <div className="flex gap-4 mb-4 relative" ref={dropdownRef}>
+          <button
+            className="bg-gray-200 rounded-sm shadow p-4 flex gap-2 items-center justify-center"
+            onClick={() => setShowDropdown((prev) => !prev)}
+          >
+            <img src={plusImg} alt="Add" /> Add to Collection
           </button>
 
-          <button
-            onClick={handleDownload}
-            className="bg-[#E5E7EB] rounded-sm shadow text-[0.875rem] font-bold cursor-pointer p-4 flex gap-2 justify-center items-center"
+          <a
+            href={res.links.download}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <img src={downloadImg} alt="" />
-            <p>Download</p>
-          </button>
+            <button className="bg-gray-200 rounded-sm shadow p-4 flex gap-2 items-center justify-center">
+              <img src={downloadImg} alt="Download" /> Download
+            </button>
+          </a>
+
+          {showDropdown && (
+            <ul className="absolute top-full left-0 mt-2 bg-white shadow-lg rounded w-60 p-2 z-10">
+              <input
+                type="text"
+                placeholder="Search collections..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full p-2 mb-2 border rounded"
+              />
+
+              {collections.length === 0 && (
+                <li className="text-gray-500 p-2 text-sm">
+                  No collections yet. Create one on the Collections page.
+                </li>
+              )}
+
+              {collections.length > 0 && filteredCollections.length === 0 && (
+                <li className="text-gray-400 p-2 text-sm">
+                  No matching collections found.
+                </li>
+              )}
+
+              {collections
+                .filter((col) =>
+                  col.name.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((col) => {
+                  const alreadyAdded = col.images.some(
+                    (img) => img.id === res.id
+                  );
+
+                  return (
+                    <li
+                      key={col.id}
+                      className={`p-2 rounded flex justify-between items-center
+                    ${
+                      alreadyAdded
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "hover:bg-gray-100 cursor-pointer"
+                    }`}
+                      onClick={() => {
+                        if (alreadyAdded) return;
+                        addImageToCollection(col.id, res);
+                        setShowDropdown(false);
+                        setSearch("");
+                      }}
+                    >
+                      <span>{col.name}</span>
+                      {alreadyAdded && (
+                        <span className="text-xs text-green-600 font-semibold">
+                          ✔ Added
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+            </ul>
+          )}
         </div>
 
-        {/* Collections */}
+        {/* ✅ COLLECTIONS THIS IMAGE BELONGS TO (NOW PROPERLY PLACED) */}
         <div className="mt-6">
-          <h2 className="font-bold mb-2">Collections this image is in:</h2>
-          {collections.length > 0 ? (
-            <ul className="list-disc pl-5">
-              {collections.map((col) => (
-                <li key={col.id}>
-                  {col.title}{" "}
+          <h3 className="font-bold mb-2">This image is in:</h3>
+
+          {imageCollections.length === 0 ? (
+            <p className="text-gray-500">None</p>
+          ) : (
+            <ul className="flex flex-wrap gap-2">
+              {imageCollections.map((col) => (
+                <li
+                  key={col.id}
+                  className="bg-gray-200 rounded px-3 py-1 flex items-center gap-2"
+                >
+                  <span className="text-sm font-medium">{col.name}</span>
+
                   <button
-                    onClick={() => handleRemoveFromCollection(col.id)}
-                    className="ml-2 text-red-500 underline text-sm"
+                    onClick={() => removeCollection(col.id)}
+                    className="text-red-600 text-xs font-bold hover:underline"
                   >
-                    Remove
+                    Delete
                   </button>
                 </li>
               ))}
             </ul>
-          ) : (
-            <p>This image is not in any collections yet.</p>
           )}
         </div>
       </section>
-
-      {/* Modal */}
-      <AddToCollectionModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        availableCollections={availableCollections}
-        onAdd={handleAddToCollection}
-      />
     </main>
   );
 };
