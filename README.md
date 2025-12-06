@@ -28,9 +28,7 @@ UnsplashBox is a modern React application that allows users to search high-quali
 🎨 Modern UI/UX — Fully responsive design with Tailwind CSS.
 ---
 
-🧰 Tech Stack
-
-## 🧰 Tech Stack
+# 🧰 Tech Stack
 
 | Category               | Tools Used                                                                             |
 | ---------------------- | -------------------------------------------------------------------------------------- |
@@ -53,19 +51,19 @@ UnsplashBox is a modern React application that allows users to search high-quali
 
 Follow these steps to run the project locally:
 
-# 1️⃣ Clone the repository
+ 1️⃣ Clone the repository
 git clone https://github.com/your-username/snap-shelf.git
 
-# 2️⃣ Navigate into the project directory
+ 2️⃣ Navigate into the project directory
 cd snap-shelf
 
-# 3️⃣ Install dependencies
+ 3️⃣ Install dependencies
 npm install
 
-# 4️⃣ Create a .env file and add your Unsplash API key
+ 4️⃣ Create a .env file and add your Unsplash API key
 VITE_API_KEY=your_unsplash_access_key
 
-# 5️⃣ Start the development server
+ 5️⃣ Start the development server
 npm run dev
 
 
