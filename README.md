@@ -3,6 +3,7 @@ UnsplashBox— Unsplash Image Collections App
 UnsplashBox is a modern React application that allows users to search high-quality images from Unsplash, view full image details, and organize images into custom collections. It integrates with the [Unsplash API](https://unsplash.com/developers) to deliver smooth, responsive, and intuitive experience for managing inspiration, assets, and visual ideas.
 
 ---
+
 🚀 Features
 
 🔍 Search Images — Find stunning photos by keyword using the Unsplash API.
@@ -25,19 +26,18 @@ UnsplashBox is a modern React application that allows users to search high-quali
 
 ⚡ Data Fetching & Caching — Powered by TanStack Query (React Query).
 
-🎨 Modern UI/UX — Fully responsive design with Tailwind CSS.
----
+## 🎨 Modern UI/UX — Fully responsive design with Tailwind CSS.
 
 # 🧰 Tech Stack
 
-| Category               | Tools Used                                                                             |
-| ---------------------- | -------------------------------------------------------------------------------------- |
-| **Frontend Framework** | [React](https://react.dev/)                                                            |
-| **Routing**            | [React Router DOM](https://reactrouter.com/)                                           |
-| **Styling**            | [Tailwind CSS](https://tailwindcss.com/)                                               |
-| **State Management**   | [Zustand](https://zustand-demo.pmnd.rs/)                                               |
-| **Data Fetching**      | [Axios](https://axios-http.com/), [TanStack Query](https://tanstack.com/query/latest)  |           |
-| **Icons**              | [React Icons](https://react-icons.github.io/react-icons/)                              |
+| Category               | Tools Used                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------- | --- |
+| **Frontend Framework** | [React](https://react.dev/)                                                           |
+| **Routing**            | [React Router DOM](https://reactrouter.com/)                                          |
+| **Styling**            | [Tailwind CSS](https://tailwindcss.com/)                                              |
+| **State Management**   | [Zustand](https://zustand-demo.pmnd.rs/)                                              |
+| **Data Fetching**      | [Axios](https://axios-http.com/), [TanStack Query](https://tanstack.com/query/latest) |     |
+| **Icons**              | [React Icons](https://react-icons.github.io/react-icons/)                             |
 
 ---
 
@@ -45,30 +45,30 @@ UnsplashBox is a modern React application that allows users to search high-quali
 ![unsplash](https://github.com/user-attachments/assets/235d0a73-9f90-437b-841f-0e2888e2e686)
 
 ---
+
 🌐 [Live Site URL](https://unsplash-collection-two.vercel.app/)
 
 ⚙️ Installation & Setup
 
 Follow these steps to run the project locally:
 
- 1️⃣ Clone the repository
-git clone https://github.com/your-username/snap-shelf.git
+1️⃣ Clone the repository
+git clone https://github.com/JudithJude369/Unsplash-Collection.git
 
- 2️⃣ Navigate into the project directory
-cd snap-shelf
+2️⃣ Navigate into the project directory
+cd Unsplash-Collection
 
- 3️⃣ Install dependencies
+3️⃣ Install dependencies
 npm install
 
- 4️⃣ Create a .env file and add your Unsplash API key
+4️⃣ Create a .env file and add your Unsplash API key
 VITE_API_KEY=your_unsplash_access_key
 
- 5️⃣ Start the development server
+5️⃣ Start the development server
 npm run dev
 
-
 Then open http://localhost:5173/
- in your browser 🚀
+in your browser 🚀
 
 🌍 API Source
 
@@ -76,14 +76,14 @@ This project uses the Unsplash API
 —a powerful API that provides access to millions of high-quality free images.
 
 🧩 Project Structure
-SnapShelf/
+Unsplash-Collection/
 ├── src/
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Home, Image Details, Collections pages
-│   ├── store/          # Zustand global stores
-│   ├── hooks/          # Custom hooks (e.g. debounce)
-│   ├── App.jsx         # App routing
-│   └── main.jsx        # Entry point
+│ ├── components/ # Reusable UI components
+│ ├── pages/ # Home, Image Details, Collections pages
+│ ├── store/ # Zustand global stores
+│ ├── hooks/ # Custom hooks (e.g. debounce)
+│ ├── App.jsx # App routing
+│ └── main.jsx # Entry point
 └── package.json
 
 💡 Future Improvements
@@ -103,7 +103,6 @@ SnapShelf/
 🧑‍💻 Author
 
 👩‍💻 Ifunanya Mmeremikwu
-📧 Email: ifunanyajudith09@gmail.com
 
 💼 LinkedIn: [ifunanya Mmeremikwu](https://www.linkedin.com/in/ifunanya-mmeremikwu/)
 
